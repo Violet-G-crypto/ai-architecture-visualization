@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>AI + 中国古代建筑成就可视化</title>
+  <title>中国古代建筑成就可视化</title>
 
-  <!-- ECharts CDN（国内可用） -->
+  <!-- 国内可用 ECharts CDN -->
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
   <style>
@@ -12,8 +12,9 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                   "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont,
+                   "SF Pro Text", "Helvetica Neue",
+                   Arial, sans-serif;
     }
 
     body {
@@ -21,15 +22,15 @@
       color: #1d1d1f;
     }
 
-    /* 顶部导航 */
+    /* 顶部 */
     header {
       height: 64px;
-      background: rgba(255,255,255,0.8);
-      backdrop-filter: blur(10px);
+      padding: 0 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 32px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(10px);
       position: sticky;
       top: 0;
       z-index: 10;
@@ -45,48 +46,69 @@
       color: #6e6e73;
     }
 
-    /* 主区域 */
+    /* 主体布局 */
     main {
-      padding: 40px;
+      display: flex;
+      gap: 24px;
+      padding: 32px;
       max-width: 1200px;
       margin: auto;
     }
 
+    /* 左右卡片 */
     .card {
       background: #ffffff;
       border-radius: 18px;
-      padding: 32px;
-      margin-bottom: 32px;
+      padding: 28px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.06);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    /* Apple 风 hover */
     .card:hover {
       transform: translateY(-4px);
       box-shadow: 0 12px 32px rgba(0,0,0,0.08);
     }
 
-    .card h2 {
+    .left {
+      flex: 3;
+    }
+
+    .right {
+      flex: 1.4;
+    }
+
+    h2 {
       font-size: 20px;
       margin-bottom: 12px;
     }
 
-    .card p {
+    p {
       color: #6e6e73;
       line-height: 1.6;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
-    /* 图表区域 */
+    /* 图表 */
     #chart {
       width: 100%;
-      height: 400px;
+      height: 420px;
+    }
+
+    /* ===== AI 卡片 Apple 风动画 ===== */
+    .ai-box {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.45s ease;
+    }
+
+    .ai-box.active {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     footer {
       text-align: center;
-      padding: 40px;
+      padding: 32px;
       color: #6e6e73;
       font-size: 14px;
     }
@@ -95,92 +117,89 @@
 
 <body>
 
-  <!-- 顶部 -->
-  <header>
-    <h1>AI × 中国古代建筑</h1>
-    <span>信息可视化实验项目</span>
-  </header>
+<header>
+  <h1>🏯 中国古代建筑成就可视化</h1>
+  <span>AI + 信息可视化系统 Demo</span>
+</header>
 
-  <!-- 主体 -->
-  <main>
+<main>
 
-    <!-- 项目介绍 -->
-    <div class="card">
-      <h2>项目简介</h2>
-      <p>
-        本项目以中国古代建筑成就为研究对象，结合人工智能数据整理能力
-        与信息可视化技术，探索不同时代建筑类型的演变规律，
-        为文化遗产研究提供新的分析视角。
+  <!-- 左侧图表 -->
+  <div class="card left">
+    <h2>各朝代建筑数量分布（示意数据）</h2>
+    <p>
+      基于 AI 对历史建筑文本资料的结构化处理结果，
+      不同朝代代表性建筑数量以可视化形式呈现。
+    </p>
+    <div id="chart"></div>
+  </div>
+
+  <!-- 右侧 AI 解读 -->
+  <div class="card right">
+    <div class="ai-box" id="ai-box">
+      <h2>AI 分析解读</h2>
+      <p id="ai-text">
+        点击左侧图表中的朝代柱状条，
+        查看 AI 对该时期建筑特征的分析。
       </p>
     </div>
+  </div>
 
-    <!-- 可视化区域 -->
-    <div class="card">
-      <h2>各朝代建筑类型分布</h2>
-      <p>
-        图表展示了不同历史时期代表性建筑类型的数量变化。
-        AI 对原始文本资料进行结构化处理后，
-        数据以可视化形式呈现。
-      </p>
+</main>
 
-      <div id="chart"></div>
-    </div>
+<footer>
+  中国大学生计算机大赛 · AI + 信息可视化方向
+</footer>
 
-  </main>
+<script>
+  const chartDom = document.getElementById('chart');
+  const myChart = echarts.init(chartDom);
 
-  <footer>
-    中国大学生计算机大赛 · AI + 信息可视化
-  </footer>
+  const option = {
+    tooltip: { trigger: 'axis' },
+    xAxis: {
+      type: 'category',
+      data: ['唐', '宋', '元', '明', '清']
+    },
+    yAxis: { type: 'value' },
+    series: [{
+      type: 'bar',
+      data: [120, 200, 150, 80, 70],
+      itemStyle: {
+        color: '#5b4cdb',
+        borderRadius: [6, 6, 0, 0]
+      }
+    }],
+    animationDuration: 1000,
+    animationEasing: 'cubicOut'
+  };
 
-  <!-- JS -->
-  <script>
-    const chartDom = document.getElementById('chart');
-    const myChart = echarts.init(chartDom);
+  myChart.setOption(option);
 
-    const option = {
-      tooltip: {
-        trigger: 'axis'
-      },
-      legend: {
-        data: ['宫殿', '寺庙', '桥梁']
-      },
-      xAxis: {
-        type: 'category',
-        data: ['秦汉', '隋唐', '宋元', '明清']
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [
-        {
-          name: '宫殿',
-          type: 'line',
-          smooth: true,
-          data: [12, 20, 18, 25]
-        },
-        {
-          name: '寺庙',
-          type: 'line',
-          smooth: true,
-          data: [8, 15, 22, 30]
-        },
-        {
-          name: '桥梁',
-          type: 'line',
-          smooth: true,
-          data: [5, 10, 16, 28]
-        }
-      ],
-      animationDuration: 1200,
-      animationEasing: 'cubicOut'
-    };
+  // ===== 伪 AI 解读映射 =====
+  const aiAnalysisMap = {
+    '唐': '唐代建筑规模宏大，强调中轴对称与都城规划，体现盛世气象。',
+    '宋': '宋代建筑数量显著上升，城市化与工艺技术成熟推动建筑发展。',
+    '元': '元代建筑在中原形制基础上，融合了多民族文化与空间布局特点。',
+    '明': '明代建筑制度化程度高，官式建筑规范对后世影响深远。',
+    '清': '清代建筑在礼制表达与装饰艺术方面达到高峰。'
+  };
 
-    myChart.setOption(option);
+  const aiText = document.getElementById('ai-text');
+  const aiBox = document.getElementById('ai-box');
 
-    window.addEventListener('resize', () => {
-      myChart.resize();
-    });
-  </script>
+  // 点击柱子 → AI 解读变化 + 动画
+  myChart.on('click', function (params) {
+    aiText.innerText = aiAnalysisMap[params.name];
+    aiBox.classList.remove('active');
+    void aiBox.offsetWidth; // 强制重绘，确保动画生效
+    aiBox.classList.add('active');
+  });
+
+  window.addEventListener('resize', () => {
+    myChart.resize();
+  });
+</script>
 
 </body>
 </html>
