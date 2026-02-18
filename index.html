@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI + 信息可视化 | 中国古代建筑</title>
+
+  <!-- ECharts（国内 CDN，可用） -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+      background: #f5f5f7;
+      color: #1d1d1f;
+    }
+
+    /* 顶部 */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 28px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #ddd;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .header-sub {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    /* 主体 */
+    .main {
+      display: flex;
+      gap: 20px;
+      padding: 24px;
+      height: calc(100vh - 72px);
+    }
+
+    .panel {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .panel:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+
+    .left-panel { flex: 3; }
+    .right-panel { flex: 1; }
+
+    .title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    #chart {
+      height: 360px;
+    }
+
+    .ai-text {
+      font-size: 14px;
+      line-height: 1.75;
+      white-space: pre-wrap;
+    }
+
+    .ai-loading {
+      opacity: 0.6;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部 -->
+  <div class="header">
+    <div class="header-title">🏯 中国古代建筑成就可视化</div>
+    <div class="header-sub">AI + 信息可视化系统 Demo</div>
+  </div>
+
+  <!-- 主体 -->
+  <div class="main">
+
+    <!-- 左：图表 -->
+    <div class="panel left-panel">
+      <div class="title">各朝代建筑数量分布（示意数据）</div>
+      <div id="chart"></div>
+    </div>
+
+    <!-- 右：AI -->
+    <div class="panel right-panel">
+      <div class="title">AI 分析解读</div>
+      <div id="aiText" class="ai-text ai-loading">
+        点击左侧图表中的朝代，AI 将进行分析。
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /***********************
+     * 1️⃣ 初始化 ECharts
+     ***********************/
+    const chart = echarts.init(document.getElementById('chart'));
+
+    const dynasties = ['唐', '宋', '元', '明', '清'];
+    const values = [120, 200, 150, 80, 70];
+
+    chart.setOption({
+      tooltip: {},
+      xAxis: {
+        type: 'category',
+        data: dynasties
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [{
+        type: 'bar',
+        data: values,
+        itemStyle: {
+          color: '#4f46e5',
+          borderRadius: [6, 6, 0, 0]
+        }
+      }]
+    });
+
+    /***********************
+     * 2️⃣ 打字机动画函数
+     ***********************/
+    function typeWriter(element, text, speed = 35) {
+      element.innerText = '';
+      let index = 0;
+
+      const timer = setInterval(() => {
+        element.innerText += text[index];
+        index++;
+
+        if (index >= text.length) {
+          clearInterval(timer);
+        }
+      }, speed);
+    }
+
+    /***********************
+     * 3️⃣ 模拟 AI 接口（前端工程写法）
+     * 👉 比赛时：直接换成 fetch 后端
+     ***********************/
+    async function fetchAIAnalysis(context) {
+      // 模拟 AI 思考时间
+      await new Promise(r => setTimeout(r, 900));
+
+      // ⚠️ 真正接国内 AI 时：
+      // return fetch('/api/ai', { method:'POST', body: JSON.stringify(context) })
+
+      return `
+基于 ${context.dynasty} 时期的建筑数据，
+AI 分析认为该阶段建筑在城市规划、
+木构技术以及礼制表达方面
+呈现出显著的时代特征。
+
+该时期建筑成就对后世
+产生了持续而深远的影响。
+      `.trim();
+    }
+
+    /***********************
+     * 4️⃣ 图表点击 → AI 联动
+     ***********************/
+    chart.on('click', async (params) => {
+      const dynasty = params.name;
+      const aiEl = document.getElementById('aiText');
+
+      aiEl.classList.add('ai-loading');
+      aiEl.innerText = 'AI 正在分析中…';
+
+      const result = await fetchAIAnalysis({
+        dynasty,
+        task: 'architecture-analysis'
+      });
+
+      aiEl.classList.remove('ai-loading');
+      typeWriter(aiEl, result);
+    });
+  </script>
+
+</body>
+</html>
