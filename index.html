@@ -2,202 +2,183 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>AI + 信息可视化 | 中国古代建筑</title>
+  <title>AI + 中国古代建筑成就可视化</title>
 
-  <!-- ECharts（国内 CDN，可用） -->
-  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+  <!-- ECharts CDN（国内可用） -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                   "Helvetica Neue", Arial, sans-serif;
+    }
 
     body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
       background: #f5f5f7;
       color: #1d1d1f;
     }
 
-    /* 顶部 */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 18px 28px;
-      background: rgba(255,255,255,0.85);
+    /* 顶部导航 */
+    header {
+      height: 64px;
+      background: rgba(255,255,255,0.8);
       backdrop-filter: blur(10px);
-      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
       position: sticky;
       top: 0;
       z-index: 10;
     }
 
-    .header-title {
+    header h1 {
       font-size: 18px;
       font-weight: 600;
     }
 
-    .header-sub {
+    header span {
       font-size: 14px;
-      opacity: 0.7;
+      color: #6e6e73;
     }
 
-    /* 主体 */
-    .main {
-      display: flex;
-      gap: 20px;
-      padding: 24px;
-      height: calc(100vh - 72px);
+    /* 主区域 */
+    main {
+      padding: 40px;
+      max-width: 1200px;
+      margin: auto;
     }
 
-    .panel {
-      background: white;
+    .card {
+      background: #ffffff;
       border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .panel:hover {
+    /* Apple 风 hover */
+    .card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.08);
     }
 
-    .left-panel { flex: 3; }
-    .right-panel { flex: 1; }
-
-    .title {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 14px;
+    .card h2 {
+      font-size: 20px;
+      margin-bottom: 12px;
     }
 
+    .card p {
+      color: #6e6e73;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* 图表区域 */
     #chart {
-      height: 360px;
+      width: 100%;
+      height: 400px;
     }
 
-    .ai-text {
+    footer {
+      text-align: center;
+      padding: 40px;
+      color: #6e6e73;
       font-size: 14px;
-      line-height: 1.75;
-      white-space: pre-wrap;
-    }
-
-    .ai-loading {
-      opacity: 0.6;
-      font-style: italic;
     }
   </style>
 </head>
+
 <body>
 
   <!-- 顶部 -->
-  <div class="header">
-    <div class="header-title">🏯 中国古代建筑成就可视化</div>
-    <div class="header-sub">AI + 信息可视化系统 Demo</div>
-  </div>
+  <header>
+    <h1>AI × 中国古代建筑</h1>
+    <span>信息可视化实验项目</span>
+  </header>
 
   <!-- 主体 -->
-  <div class="main">
+  <main>
 
-    <!-- 左：图表 -->
-    <div class="panel left-panel">
-      <div class="title">各朝代建筑数量分布（示意数据）</div>
+    <!-- 项目介绍 -->
+    <div class="card">
+      <h2>项目简介</h2>
+      <p>
+        本项目以中国古代建筑成就为研究对象，结合人工智能数据整理能力
+        与信息可视化技术，探索不同时代建筑类型的演变规律，
+        为文化遗产研究提供新的分析视角。
+      </p>
+    </div>
+
+    <!-- 可视化区域 -->
+    <div class="card">
+      <h2>各朝代建筑类型分布</h2>
+      <p>
+        图表展示了不同历史时期代表性建筑类型的数量变化。
+        AI 对原始文本资料进行结构化处理后，
+        数据以可视化形式呈现。
+      </p>
+
       <div id="chart"></div>
     </div>
 
-    <!-- 右：AI -->
-    <div class="panel right-panel">
-      <div class="title">AI 分析解读</div>
-      <div id="aiText" class="ai-text ai-loading">
-        点击左侧图表中的朝代，AI 将进行分析。
-      </div>
-    </div>
+  </main>
 
-  </div>
+  <footer>
+    中国大学生计算机大赛 · AI + 信息可视化
+  </footer>
 
+  <!-- JS -->
   <script>
-    /***********************
-     * 1️⃣ 初始化 ECharts
-     ***********************/
-    const chart = echarts.init(document.getElementById('chart'));
+    const chartDom = document.getElementById('chart');
+    const myChart = echarts.init(chartDom);
 
-    const dynasties = ['唐', '宋', '元', '明', '清'];
-    const values = [120, 200, 150, 80, 70];
-
-    chart.setOption({
-      tooltip: {},
+    const option = {
+      tooltip: {
+        trigger: 'axis'
+      },
+      legend: {
+        data: ['宫殿', '寺庙', '桥梁']
+      },
       xAxis: {
         type: 'category',
-        data: dynasties
+        data: ['秦汉', '隋唐', '宋元', '明清']
       },
       yAxis: {
         type: 'value'
       },
-      series: [{
-        type: 'bar',
-        data: values,
-        itemStyle: {
-          color: '#4f46e5',
-          borderRadius: [6, 6, 0, 0]
+      series: [
+        {
+          name: '宫殿',
+          type: 'line',
+          smooth: true,
+          data: [12, 20, 18, 25]
+        },
+        {
+          name: '寺庙',
+          type: 'line',
+          smooth: true,
+          data: [8, 15, 22, 30]
+        },
+        {
+          name: '桥梁',
+          type: 'line',
+          smooth: true,
+          data: [5, 10, 16, 28]
         }
-      }]
-    });
+      ],
+      animationDuration: 1200,
+      animationEasing: 'cubicOut'
+    };
 
-    /***********************
-     * 2️⃣ 打字机动画函数
-     ***********************/
-    function typeWriter(element, text, speed = 35) {
-      element.innerText = '';
-      let index = 0;
+    myChart.setOption(option);
 
-      const timer = setInterval(() => {
-        element.innerText += text[index];
-        index++;
-
-        if (index >= text.length) {
-          clearInterval(timer);
-        }
-      }, speed);
-    }
-
-    /***********************
-     * 3️⃣ 模拟 AI 接口（前端工程写法）
-     * 👉 比赛时：直接换成 fetch 后端
-     ***********************/
-    async function fetchAIAnalysis(context) {
-      // 模拟 AI 思考时间
-      await new Promise(r => setTimeout(r, 900));
-
-      // ⚠️ 真正接国内 AI 时：
-      // return fetch('/api/ai', { method:'POST', body: JSON.stringify(context) })
-
-      return `
-基于 ${context.dynasty} 时期的建筑数据，
-AI 分析认为该阶段建筑在城市规划、
-木构技术以及礼制表达方面
-呈现出显著的时代特征。
-
-该时期建筑成就对后世
-产生了持续而深远的影响。
-      `.trim();
-    }
-
-    /***********************
-     * 4️⃣ 图表点击 → AI 联动
-     ***********************/
-    chart.on('click', async (params) => {
-      const dynasty = params.name;
-      const aiEl = document.getElementById('aiText');
-
-      aiEl.classList.add('ai-loading');
-      aiEl.innerText = 'AI 正在分析中…';
-
-      const result = await fetchAIAnalysis({
-        dynasty,
-        task: 'architecture-analysis'
-      });
-
-      aiEl.classList.remove('ai-loading');
-      typeWriter(aiEl, result);
+    window.addEventListener('resize', () => {
+      myChart.resize();
     });
   </script>
 
