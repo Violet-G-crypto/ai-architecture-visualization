@@ -28,9 +28,32 @@
   function search() {
     if (!keyword.value) return
   
-    // ⚠️ 这里后期直接换成 AI 接口
-    result.value =
-      `关于「${keyword.value}」的分析结果：该建筑在结构、功能与审美层面具有重要历史价值。`
+   async function search() {
+  if (!keyword.value) return
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        keyword: keyword.value
+      })
+    })
+
+    const data = await response.json()
+
+    if (data.success) {
+      result.value = JSON.stringify(data.data, null, 2)
+    } else {
+      result.value = data.error
+    }
+
+  } catch (err) {
+    result.value = "请求失败"
+  }
+}
   }
   </script>
   
