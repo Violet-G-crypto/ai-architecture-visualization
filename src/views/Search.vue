@@ -19,16 +19,13 @@
     </div>
   </template>
   
-  <script setup>
-  import { ref } from 'vue'
-  
-  const keyword = ref('')
-  const result = ref('')
-  
-  function search() {
-    if (!keyword.value) return
-  
-   async function search() {
+<script setup>
+import { ref } from 'vue'
+
+const keyword = ref('')
+const result = ref('')
+
+async function search() {
   if (!keyword.value) return
 
   try {
@@ -54,8 +51,7 @@
     result.value = "请求失败"
   }
 }
-  }
-  </script>
+</script>
   
   <style scoped>
   .search-root {
